@@ -1,4 +1,4 @@
-package frc.team7520.robot;
+package frc.robot;
 
 import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.math.geometry.Pose2d;
