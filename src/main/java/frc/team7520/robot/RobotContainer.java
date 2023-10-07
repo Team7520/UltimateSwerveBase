@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.team7520.robot;
 
 import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import frc.team7520.robot.Robot;
 import frc.team7520.robot.auto.Taxi;
 import frc.team7520.robot.commands.*;
 import frc.team7520.robot.subsystems.swerve.SwerveBase;
