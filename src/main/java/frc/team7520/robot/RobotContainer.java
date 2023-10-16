@@ -1,6 +1,7 @@
 package frc.team7520.robot;
 
 import com.pathplanner.lib.server.PathPlannerServer;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.net.PortForwarder;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.team7520.robot.Robot;
 import frc.team7520.robot.auto.Taxi;
 import frc.team7520.robot.commands.*;
+import frc.team7520.robot.subsystems.arm.Hand;
 import frc.team7520.robot.subsystems.swerve.SwerveBase;
 import frc.team7520.robot.subsystems.arm.Arm;
 
@@ -54,6 +56,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final SwerveBase s_Swerve = new SwerveBase();
+    private final Hand hand = Hand.getInstance();
 
     /* Commands */
 
@@ -63,6 +66,13 @@ public class RobotContainer {
             s_Swerve::getPose,
             new Pose2d(15.01, 1.52, new Rotation2d(0)),
             false
+    );
+
+    HandCommand handCommand = new HandCommand(
+            hand,
+            () -> {
+                return (operator.getRawButton(XboxController.Button.kRightBumper.value) ? -1 : 1) * operator.getRawAxis(XboxController.Axis.kRightTrigger.value);
+            }
     );
 
     /* Network Tables Elements */
@@ -82,6 +92,7 @@ public class RobotContainer {
                 () -> false
             )
         );
+        hand.setDefaultCommand(handCommand);
         /* Auto */
         PathPlannerServer.startServer(5811);
         movementChooser.setDefaultOption("taxi", new Taxi(s_Swerve));

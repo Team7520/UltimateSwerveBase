@@ -32,7 +32,7 @@ public class Arm extends SubsystemBase {
         CUBE(-87, 69),
         CONE(-100, 65),
         DUNK(-103, 70),
-        REST(0,0);
+        REST(0,-115);
 
         public double arm;
         public double elbow;
