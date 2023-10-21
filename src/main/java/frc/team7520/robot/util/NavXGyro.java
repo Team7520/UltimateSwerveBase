@@ -6,6 +6,7 @@ package frc.team7520.robot.util;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 
 public class NavXGyro extends AHRS{
@@ -18,7 +19,7 @@ public class NavXGyro extends AHRS{
     private NavXGyro() {
         super(SPI.Port.kMXP);
 
-        zeroHeading = getNavHeading();
+        zeroHeading = getNavHeading() + ((DriverStation.getAlliance() == DriverStation.Alliance.Red) ? 90 : -90);
         zeroAngle = getNavAngle();
         System.out.println("Setup ZeroAngle " + zeroAngle);
 
@@ -45,10 +46,7 @@ public class NavXGyro extends AHRS{
     public void zeroNavHeading() {
         //navX.zeroYaw();
         reset();
-        zeroHeading = getNavHeading();
-        zeroAngle = getNavAngle();
-        System.out.println("ZeroHeading: " + zeroHeading);
-        System.out.println("ZeroAngle: " + zeroAngle);
+
     }
 
     public double getZeroHeading(){
@@ -64,7 +62,7 @@ public class NavXGyro extends AHRS{
     }
 
     public double getHeading() {
-        return Math.IEEEremainder(-getNavAngle(), 360);
+        return Math.IEEEremainder(-getNavAngle(), 360) - ((DriverStation.getAlliance() == DriverStation.Alliance.Red) ? 180 : 0);
     }
 
     public Rotation2d getRotation2d() {

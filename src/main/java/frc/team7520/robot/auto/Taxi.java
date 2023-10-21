@@ -13,7 +13,7 @@ import frc.team7520.robot.util.NavXGyro;
 public class Taxi extends AutoBase {
     public Taxi(SwerveBase swerve) {
         super(swerve);
-        PathPlannerTrajectory taxi = PathPlanner.loadPath("taxi", 4.0, 3.0, true);
+        PathPlannerTrajectory taxi = PathPlanner.loadPath("taxi", 4.0, 3.0);
         PPSwerveControllerCommand command = baseSwerveCommand(taxi);
         PathPlannerState initialState = taxi.getInitialState();
 

@@ -1,22 +1,19 @@
 package frc.team7520.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team7520.robot.subsystems.arm.Hand;
 
-import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class HandCommand extends CommandBase {
     private final Hand handSubsystem;
 
-    private final DoubleSupplier speed;
+    private final DoubleSupplier speedSup;
 
-    public HandCommand(Hand handSubsystem, DoubleSupplier speed) {
+    public HandCommand(Hand handSubsystem, DoubleSupplier speedSup) {
         this.handSubsystem = handSubsystem;
-        this.speed = speed;
+        this.speedSup = speedSup;
         addRequirements(handSubsystem);
     }
 
@@ -27,8 +24,18 @@ public class HandCommand extends CommandBase {
 
     @Override
     public void execute() {
-        handSubsystem.left.set(speed.getAsDouble());
-        handSubsystem.right.set(speed.getAsDouble());
+        double speedVal = speedSup.getAsDouble();
+        if(speedVal > 0){
+            handSubsystem.left.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            handSubsystem.right.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            handSubsystem.left.set(speedVal*0.03);
+            handSubsystem.right.set(speedVal*0.03);
+        }else {
+            handSubsystem.left.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            handSubsystem.right.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            handSubsystem.left.set((speedVal*0.3)-0.03);
+            handSubsystem.right.set((speedVal*0.3)-0.03);
+        }
     }
 
     @Override

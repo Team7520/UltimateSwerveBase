@@ -28,11 +28,11 @@ public class Arm extends SubsystemBase {
     Position currentPosition = Position.REST;
 
     enum Position {
-        FLOOR(0, 28.6),
-        CUBE(-87, 69),
-        CONE(-100, 65),
+        FLOOR(-12.2, 16.76),
+        CUBE(-98.526, 24.97),
+        CONE(-101.43, 42.2614631652832),
         DUNK(-103, 70),
-        REST(0,-115);
+        REST(0,109.4);
 
         public double arm;
         public double elbow;
@@ -85,14 +85,14 @@ public class Arm extends SubsystemBase {
         elbowPID.setP(1);
         elbowPID.setI(0);
         elbowPID.setD(0);
-        elbowPID.setFF(.1);
+        elbowPID.setFF(0.01);
 
         armPID.setP(1);
         armPID.setI(0);
         armPID.setD(0);
         armPID.setFF(0.1);
 
-        elbowPID.setOutputRange(-0.5,0.25);
+        elbowPID.setOutputRange(-0.20,0.9);
         armPID.setOutputRange(-1,1);
 
         elbowMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -140,17 +140,17 @@ public class Arm extends SubsystemBase {
 
         return runOnce(() ->{
 
-            System.out.println(Math.abs(arm.getAsDouble()));
+//            System.out.println(Math.abs(arm.getAsDouble()));
 
             if(Math.abs(arm.getAsDouble()) > 0.05){
-                System.out.println(arm);
+//                System.out.println(arm);
 
                 currentPosition.arm = currentPosition.arm + 1 * arm.getAsDouble();
             }
 
             if(Math.abs(elbow.getAsDouble()) > 0.05){
 
-                System.out.println(elbow);
+//                System.out.println(elbow);
                 currentPosition.elbow =  currentPosition.elbow - 1 * elbow.getAsDouble();
             }
 
