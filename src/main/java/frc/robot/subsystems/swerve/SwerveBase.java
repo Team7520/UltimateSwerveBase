@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import frc.lib.math.GeometryUtils;
@@ -35,7 +36,7 @@ public class SwerveBase extends SubsystemBase {
     private int moduleSynchronizationCounter = 0;
     private double avgOmega = 0;
 
-    private double fieldOffset = gyro.getYaw();
+//    private Rotation2d fieldOffset = new Rotation2d(gyro.getYaw()).rotateBy(new Rotation2d(180));
     private final Field2d field = new Field2d();
     private boolean hasInitialized = false;
 
@@ -87,15 +88,18 @@ public class SwerveBase extends SubsystemBase {
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         ChassisSpeeds desiredChassisSpeeds =
-        fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-        translation.getX(),
-        translation.getY(),
-        rotation,
-        getYaw())
+        fieldRelative ?
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+                translation.getX(),
+                translation.getY(),
+                rotation,
+                swerveOdometer.getEstimatedPosition().getRotation().plus(Rotation2d.fromDegrees(DriverStation.getAlliance() == DriverStation.Alliance.Red ? 180 : 0))
+        )
         : new ChassisSpeeds(
                 translation.getX(),
                 translation.getY(),
-                rotation);
+                rotation
+        );
         desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
         SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
@@ -140,8 +144,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     public void zeroGyro(double deg) {
-        gyro.zeroNavHeading();
-        swerveOdometer.update(getYaw(), getModulePositions());
+        gyro.reset();
     }
 
     public void zeroGyro() {
@@ -149,7 +152,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     public Rotation2d getYaw() {
-        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getHeading()) : Rotation2d.fromDegrees(gyro.getHeading());
+        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360).minus(gyro.getRotation2d()) : gyro.getRotation2d();
     }
 
     public void synchronizeModuleEncoders() {
@@ -167,7 +170,8 @@ public class SwerveBase extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Rotation2d yaw = getYaw();
+        SmartDashboard.putNumber("gyro", gyro.getHeading());
+
         swerveOdometer.update(getYaw(), getModulePositions());
         SmartDashboard.putBoolean("photonGood", cam.latency() < 0.6);
         if (!hasInitialized /* || DriverStation.isDisabled() */) {
@@ -218,6 +222,8 @@ public class SwerveBase extends SubsystemBase {
             SmartDashboard.putBoolean("Can Synchronizing Encoders", false);
         }
         SmartDashboard.putNumber("avgOmega", avgOmega);
+
+        SmartDashboard.putBoolean("isRed", DriverStation.getAlliance() == DriverStation.Alliance.Red);
     }
 
     public void stop() {

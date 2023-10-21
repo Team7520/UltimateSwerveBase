@@ -13,7 +13,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 public class Taxi extends AutoBase {
     public Taxi(SwerveBase swerve) {
         super(swerve);
-        PathPlannerTrajectory taxi = PathPlanner.loadPath("taxi", 4.0, 3.0, true);
+        PathPlannerTrajectory taxi = PathPlanner.loadPath("taxi", 4.0, 3.0);
         PPSwerveControllerCommand command = baseSwerveCommand(taxi);
         PathPlannerState initialState = taxi.getInitialState();
 
